@@ -58,6 +58,17 @@ class Film
   end
 
   def customer_count
+    # sql = "
+    # SELECT count(film_id) FROM tickets
+    # INNER JOIN screenings
+    # ON screening_id = screenings.id
+    # WHERE film_id = $1
+    # GROUP BY film_id
+    # "
+    # values = [@id]
+    # result = SqlRunner.run(sql, values).first
+    # return 0 if result == nil
+    # return result['count'].to_i
     return self.customers.count
   end
 
