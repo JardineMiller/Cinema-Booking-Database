@@ -23,15 +23,7 @@ class Customer
   end
 
   def ticket_count
-    sql = "
-    SELECT count(customer_id) FROM tickets
-    WHERE customer_id = $1
-    GROUP BY customer_id
-    "
-    values = [@id]
-    result = SqlRunner.run(sql, values).first
-    return 0 if result == nil
-    return result['count'].to_i
+    return self.films.count
   end
 
   def save
@@ -58,9 +50,11 @@ class Customer
 
   def films
     sql = "
-    SELECT films.* FROM films
-    INNER JOIN tickets
-    ON tickets.film_id = films.id
+    SELECT films.* FROM tickets
+    INNER JOIN screenings
+    ON tickets.screening_id = screenings.id
+    INNER JOIN films
+    ON screenings.film_id = films.id
     WHERE tickets.customer_id = $1
     "
     values = [@id]

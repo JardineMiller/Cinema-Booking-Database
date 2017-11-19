@@ -44,28 +44,21 @@ class Film
 
   def customers
     sql = "
-    SELECT customers.* FROM customers
-    INNER JOIN tickets
+    SELECT customers.* FROM tickets
+    INNER JOIN screenings
+    ON tickets.screening_id = screenings.id
+    INNER JOIN customers
     ON tickets.customer_id = customers.id
-    INNER JOIN films
-    ON tickets.film_id = films.id
+    WHERE film_id = $1
     "
-    customers = SqlRunner.run(sql)
+    values = [@id]
+    customers = SqlRunner.run(sql, values)
     result = customers.map { |customer| Customer.new(customer)  }
+    return result
   end
 
   def customer_count
-    sql = "
-    SELECT count(film_id) FROM tickets
-    INNER JOIN screenings
-    ON screening_id = screenings.id
-    WHERE film_id = $1
-    GROUP BY film_id
-    "
-    values = [@id]
-    result = SqlRunner.run(sql, values).first
-    return 0 if result == nil
-    return result['count'].to_i
+    return self.customers.count
   end
 
   def self.all
